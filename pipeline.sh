@@ -91,11 +91,23 @@ javac $BINDIR/VariantValidator/src/*.java
 
 #------------------------------------------------------------------------------
 
-## Filter reads by length
+echo "BEGIN FILTERED READS MODULE"
+
+## Filter reads by length - do some sort of check, if dir exists, exit, look and see if we can push to docker hub
 FILTEREDINPUTDIR=$OUTPUTDIR'/filteredreads'
+
+if [[ -d $FILTEREDINPUTDIR ]]; then
+	echo "Error: Output exists. Please exit container, remove filteredreads/ results/ and work/ directories, and run container."
+	exit 2
+fi
+
 $BINDIR/src/filterreads.sh $INPUTDIR $FILTEREDINPUTDIR $BINDIR $MIN_READ_LENGTH $MAX_READ_LENGTH
 
+echo "FINISH FILTERED READS MODULE"
+
 #------------------------------------------------------------------------------
+
+echo "BEGIN IVAR MODULE"
 
 # Run iVar pipeline
 if [ ! -d "$OUTPUTDIR/results" ]
@@ -110,48 +122,50 @@ then
   $BINDIR/src/ivar.sh $FILTEREDINPUTDIR $extraargs
 fi
 
+echo "FINISH IVAR MODULE"
+
 #------------------------------------------------------------------------------
 
 ## Call variants 
 
 # Load necessary conda environment
 
-conda activate ncov_illumina
+#conda activate ncov_illumina
 
 # Call variants
-$BINDIR/src/callvariants.sh $OUTPUTDIR $BINDIR $REFERENCE $GENES
+#$BINDIR/src/callvariants.sh $OUTPUTDIR $BINDIR $REFERENCE $GENES
 
 #------------------------------------------------------------------------------
 
 ## Run postfiltering
-$BINDIR/src/run_postfilter.sh $OUTPUTDIR $BINDIR $NTCPREFIX $REFERENCE $GLOBALDIVERSITY $KEYPOS $CASEDEFS $AMPLICONS
+#$BINDIR/src/run_postfilter.sh $OUTPUTDIR $BINDIR $NTCPREFIX $REFERENCE $GLOBALDIVERSITY $KEYPOS $CASEDEFS $AMPLICONS
 # run postfilter summary
-python $BINDIR/src/summarize_postfilter.py --rundir $OUTPUTDIR/results/postfilt
+#python $BINDIR/src/summarize_postfilter.py --rundir $OUTPUTDIR/results/postfilt
 
 #------------------------------------------------------------------------------
 
 ## Run SnpEff
-$BINDIR/src/run_snpEff.sh $OUTPUTDIR $BINDIR $SNPEFF_CONFIG $DBNAME $NTCPREFIX
+#$BINDIR/src/run_snpEff.sh $OUTPUTDIR $BINDIR $SNPEFF_CONFIG $DBNAME $NTCPREFIX
 
 #------------------------------------------------------------------------------
 
 ## Run pangolin clades
 
-if [ -z $THREADS ]; then
-   THREADS=1
-fi
-conda deactivate
-conda activate pangolin
-$BINDIR/src/run_pangolin.sh $OUTPUTDIR $BINDIR $THREADS $PANGOLIN_DATA $NTCPREFIX
+#if [ -z $THREADS ]; then
+#   THREADS=1
+#fi
+#conda deactivate
+#conda activate pangolin
+#$BINDIR/src/run_pangolin.sh $OUTPUTDIR $BINDIR $THREADS $PANGOLIN_DATA $NTCPREFIX
 
 #------------------------------------------------------------------------------
 
 ## Run nextstrain clades 
-conda deactivate
-conda activate nextstrain
-$BINDIR/src/run_nextstrain_clades.sh $OUTPUTDIR $BINDIR $REF_GB $NEXTSTRAIN_CLADES $NTCPREFIX
+#conda deactivate
+#conda activate nextstrain
+#$BINDIR/src/run_nextstrain_clades.sh $OUTPUTDIR $BINDIR $REF_GB $NEXTSTRAIN_CLADES $NTCPREFIX
 
 #------------------------------------------------------------------------------
 
 ## Copy final results into final folder
-$BINDIR/src/final_cleanup.sh $OUTPUTDIR $NTCPREFIX
+#$BINDIR/src/final_cleanup.sh $OUTPUTDIR $NTCPREFIX
