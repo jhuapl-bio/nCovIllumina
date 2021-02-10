@@ -162,7 +162,7 @@ echo "FINISH IVAR MODULE"
 
 ## Run nextstrain clades 
 #conda deactivate
-#conda activate nextstrain
+#	
 #$BINDIR/src/run_nextstrain_clades.sh $OUTPUTDIR $BINDIR $REF_GB $NEXTSTRAIN_CLADES $NTCPREFIX
 
 #------------------------------------------------------------------------------
