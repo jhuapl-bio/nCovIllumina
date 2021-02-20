@@ -101,7 +101,7 @@ done
 conda activate ncov_illumina
 
 FILTEREDINPUTDIR=$OUTPUTDIR'/filteredreads'
-if [[! -d "$FILTEREDINPUTDIR" ]] && [[$(ls -A "$FILTEREDINPUTDIR")]]; then  
+if [[! -d "$FILTEREDINPUTDIR" ]]; then  
   $BINDIR/src/filterreads.sh $INPUTDIR $FILTEREDINPUTDIR $BINDIR $MIN_READ_LENGTH $MAX_READ_LENGTH  
 else  
   echo READ FILTERING SKIPPED
