@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3
+	FROM continuumio/miniconda3
 # continuumio/miniconda3 is FROM debian:latest
 
 # add conda to PATH
@@ -37,7 +37,7 @@ RUN conda env create -f ncov2019-artic-nf/environments/illumina/environment.yml
 
 # install nextstrain pipeline
 WORKDIR /home/idies/workspace/covid19/code/
-RUN curl http://data.nextstrain.org/nextstrain.yml --compressed -o nextstrain.yml \
+RUN wget http://data.nextstrain.org/nextstrain.yml -O nextstrain.yml \
     && conda env create -f nextstrain.yml
 
 # install pangolin pipeline
@@ -52,12 +52,13 @@ RUN conda env create -f environment.yml
 
 RUN conda install -c bioconda -y nextflow matplotlib
 
+WORKDIR /opt/nCovIllumina
 COPY . .
 
-RUN useradd idies \
-    && mkdir -p /home/idies/workspace \
-    && chown -R idies:idies /home/idies \
-    && chown -R idies:idies /opt/nCovIllumina
+#RUN useradd idies \
+#    && mkdir -p /home/idies/workspace \
+#    && chown -R idies:idies /home/idies \
+#    && chown -R idies:idies /opt/nCovIllumina
 
-COPY bashrc /home/idies/.bashrc
-USER idies
+COPY bashrc /root/.bashrc
+#USER idies
